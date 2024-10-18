@@ -10,8 +10,13 @@
     <ProjectReference Include="..\SkiaTest.Client\SkiaTest.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
     <PackageReference Include="SkiaSharp" Version="2.88.8" />
-	<PackageReference Include="SkiaSharp" Version="2.88.8" />
-	  <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="8.0.7" />
+    <PackageReference Include="SkiaSharp" Version="2.88.7" />
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="2.88.7" />
+    <PackageReference Include="SkiaSharp.Views.Blazor" Version="2.88.7" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,138 @@
-﻿<h3>PaintImage</h3>
+﻿@* @page "/paintimage"
+@rendermode InteractiveAuto
 
+<h3>Paint Image</h3>
+ 
+<p>
+<button @onclick="@HandleClear">Clear</button>
+</p>
+ 
+<div id="drawing_canvas_container" style="background-color:white;flex:1">
+<SKCanvasView id="drawing_canvas" @ref="_skiaCanvas" 
+        IgnorePixelScaling="true"
+        OnPaintSurface="@OnPaintSurface" style="position:absolute; border: solid; width:500px; height:400px" 
+        @onmousedown="HandleMouseDown" 
+        @onmouseup="HandleMouseUp" 
+        @onmousemove="HandleMouseMove" 
+        @onmouseout="HandleMouseOut"
+        @onpointerdown="HandlePointerDown"/>
+</div>
+ 
+ 
+<canvas width="300" height="100">
+    Désolé, votre navigateur ne prend pas en charge &lt;canvas&gt;.
+</canvas>
+ 
+ 
 @code {
-
-}
+ 
+    SKCanvasView _skiaCanvas = null!;
+    SkiaCanvas _mauiGraphicsCanvas = new SkiaCanvas();
+    bool _mouseDown = false;
+    List<List<PointF>> _points = new List<List<PointF>>();
+    Color _color = Colors.Red;
+ 
+    void OnPaintSurface(SKPaintSurfaceEventArgs e)
+    {
+        // Get the Skia canvas and clear it
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.Transparent);
+ 
+        // Let the Maui.Graphics canvas know which underlying SkCanvas to draw to.
+        _mauiGraphicsCanvas.Canvas = canvas;
+ 
+        // Actually do the drawing with the Maui.Graphics API.
+        _mauiGraphicsCanvas.StrokeColor = _color;
+ 
+        if (_points.Count > 0)
+        {
+            foreach (var pointList in _points)
+            {
+                if (pointList.Count > 1)
+                {
+                    var start = pointList[0];
+                    for (int i = 1; i < pointList.Count; i++)
+                    {
+                        var end = pointList[i];
+                        _mauiGraphicsCanvas.DrawLine(start, end);
+                        start = end;
+                    }
+                }
+            }
+        }
+ 
+    }
+ 
+ 
+    private void HandleMouseDown(MouseEventArgs evt)
+    {
+        _mouseDown = true;
+        var points = new List<PointF>();
+        points.Add(GetPoint(evt));
+        _points.Add(points);
+        _skiaCanvas.Invalidate();
+    }
+    /// <summary>
+    /// Create a Maui.Graphics point from the mouse event.
+    /// </summary>
+    /// <param name="evt"></param>
+    /// <returns></returns>
+    private PointF GetPoint(MouseEventArgs evt)
+    {
+        return new PointF((float)evt.OffsetX, (float)evt.OffsetY);
+    }
+ 
+    private void HandleMouseUp(MouseEventArgs evt)
+    {
+        if (!_mouseDown)
+            return;
+ 
+        var point = GetPoint(evt);
+        _points[^1].Add(point);
+        _skiaCanvas.Invalidate();
+ 
+        _mouseDown = false;
+    }
+ 
+    private void HandleMouseMove(MouseEventArgs evt)
+    {
+        if (!_mouseDown)
+            return;
+ 
+        var point = GetPoint(evt);
+        _points[^1].Add(point);
+        _skiaCanvas.Invalidate();
+    }
+ 
+    private void HandleMouseOut(MouseEventArgs evt)
+    {
+        if (!_mouseDown)
+            return;
+ 
+        var point = GetPoint(evt);
+        _points[^1].Add(point);
+        _skiaCanvas.Invalidate();
+ 
+        _mouseDown = false;
+    }
+ 
+    private void HandlePointerDown(PointerEventArgs evt)
+    {
+        if (!_mouseDown)
+            return;
+ 
+        var point = GetPoint(evt);
+        _points[^1].Add(point);
+        _skiaCanvas.Invalidate();
+    }
+ 
+    /// <summary>
+    /// Clear the drawing canvas
+    /// </summary>
+    private void HandleClear()
+    {
+        _points.Clear();
+        _skiaCanvas.Invalidate();
+    }
+ 
+} *@
